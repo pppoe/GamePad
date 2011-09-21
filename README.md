@@ -5,7 +5,7 @@ movement of your role.
 The Code is easy to read and you can learn to write/customize your own pad.
 
 # Appearance
-![Appearance](https://github.com/pppoe/MPGamePad/raw/master/screenshots/gamepad.png)
+![Appearance](https://github.com/pppoe/GamePad/raw/master/screenshots/gamepad.png)
 
 # License
 Thanks to this project [ccjoystick](http://code.google.com/p/ccjoystick/)
