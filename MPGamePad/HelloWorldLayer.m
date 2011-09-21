@@ -9,6 +9,11 @@
 
 // Import the interfaces
 #import "HelloWorldLayer.h"
+#import "MPGamePad.h"
+#import "MPGamePadBall.h"
+
+@interface HelloWorldLayer () <MPGamePadDelegate>
+@end
 
 // HelloWorldLayer implementation
 @implementation HelloWorldLayer
@@ -35,17 +40,18 @@
 	// Apple recommends to re-assign "self" with the "super" return value
 	if( (self=[super init])) {
 		
-		// create and initialize a Label
-		CCLabelTTF *label = [CCLabelTTF labelWithString:@"Hello World" fontName:@"Marker Felt" fontSize:64];
-
-		// ask director the the window size
-		CGSize size = [[CCDirector sharedDirector] winSize];
-	
-		// position the label on the center of the screen
-		label.position =  ccp( size.width /2 , size.height/2 );
-		
-		// add the label as a child to this Layer
-		[self addChild: label];
+        mGamePad = [[MPGamePad alloc] init];
+        mGamePad.delegate = self;
+        mGamePad.position = ccp(100, 100);        
+		[self addChild:mGamePad];
+        
+        self.isTouchEnabled = YES;
+        
+        CGSize sz = [[CCDirector sharedDirector] winSize];
+        
+        mTestBall = [[MPGamePadBall alloc] init];
+        mTestBall.position = ccp(sz.width/2.0f, sz.height/2.0f);
+        [self addChild:mTestBall];
 	}
 	return self;
 }
@@ -58,6 +64,46 @@
 	// cocos2d will automatically release all the children (Label)
 	
 	// don't forget to call "super dealloc"
+    [mGamePad release];
+    [mTestBall release];
 	[super dealloc];
 }
+
+#pragma mark - MPGamePadDelegate
+- (void)onPadTapped:(MPGamePad *)gamePad withAngle:(float)angle withPower:(float)power {
+    
+}
+
+- (void)onPadTapped:(MPGamePad *)gamePad withDirection:(MPGamePadDirection)padDirection {
+    CGPoint pt = mTestBall.position;
+    switch (padDirection) {
+        case MPGamePadDirectionUp:
+            pt = ccp(pt.x, pt.y + gamePad.power);
+            break;
+        case MPGamePadDirectionDown:
+            pt = ccp(pt.x, pt.y - gamePad.power);
+            break;
+        case MPGamePadDirectionLeft:
+            pt = ccp(pt.x - gamePad.power, pt.y);
+            break;
+        case MPGamePadDirectionRight:
+            pt = ccp(pt.x + gamePad.power, pt.y);
+            break;            
+        default:
+            break;
+    }
+    CGSize sz = [[CCDirector sharedDirector] winSize];
+    pt.x = (pt.x < 0 ? sz.width : (pt.x > sz.width ? 0 : pt.x));
+    pt.y = (pt.y < 0 ? sz.height : (pt.y > sz.height ? 0 : pt.y));
+    mTestBall.position = pt;
+}
+
+- (void)onPadBegin:(MPGamePad *)gamePad {
+    
+}
+
+- (void)onPadEnd:(MPGamePad *)gamePad {
+    
+}
+
 @end
